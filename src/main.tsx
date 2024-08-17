@@ -6,22 +6,29 @@ import {
 } from "react-router-dom";
 import UserPage from './screens/UserPage';
 import TrackPage from './screens/TrackPage';
-
+import Layout from './layout/Layout';
+import App from './App';
 // import './index.css'
-
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello world!</div>,
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <App />
+      },
+      {
+        path: "user",
+        element: <UserPage />
+      },
+      {
+        path: "track",
+        element: <TrackPage />
+      }
+    ]
   },
-  {
-    path: "/track",
-    element: <TrackPage />
-  },
-  {
-    path: "/user",
-    element: <UserPage />
-  },
+
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
