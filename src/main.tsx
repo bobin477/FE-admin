@@ -8,7 +8,7 @@ import UserPage from './screens/UserPage';
 import TrackPage from './screens/TrackPage';
 import Layout from './layout/Layout';
 import App from './App';
-// import './index.css'
+import './app.css';
 const router = createBrowserRouter([
   {
     path: "/",
