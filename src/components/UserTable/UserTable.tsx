@@ -19,7 +19,6 @@ export interface IUser {
     password: string
     age: string
     address: string
-
 }
 
 const UserTable = () => {
@@ -27,7 +26,13 @@ const UserTable = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [userData, setUserData] = useState<null | IUser>(null)
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0b2tlbiBsb2dpbiIsImlzcyI6ImZyb20gc2VydmVyIiwiX2lkIjoiNjZiZTI3MjM1OGIxYjVmOTEyMGY2OWJjIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJhZGRyZXNzIjoiVmlldE5hbSIsImlzVmVyaWZ5Ijp0cnVlLCJuYW1lIjoiSSdtIGFkbWluIiwidHlwZSI6IlNZU1RFTSIsInJvbGUiOiJBRE1JTiIsImdlbmRlciI6Ik1BTEUiLCJhZ2UiOjY5LCJpYXQiOjE3MjQxMjI0MjMsImV4cCI6MTgxMDUyMjQyM30.vMtdLWdzpNmn0yk9eUk6DG92Ck4MsTe2cKLOUDwRuMw'
+    const token = localStorage.getItem('access_token') as string
+    const [meta, setMeta] = useState({
+        current: 1,
+        pageSize: 10,
+        pages: 0,
+        total: 0
+    })
 
     useEffect(() => {
         getData()
@@ -63,7 +68,7 @@ const UserTable = () => {
         {
             title: 'Action',
             render: (_, record) => {
-                return <div >
+                return <div>
                     <Button
                         onClick={() => {
                             console.log(record)
@@ -73,7 +78,7 @@ const UserTable = () => {
                         style={{marginRight: "10px"}}
                     >Edit
                     </Button>
-                  <DeleteUserButton token={token} _id={record._id} getData={getData} />
+                    <DeleteUserButton token={token} _id={record._id} getData={getData}/>
                 </div>
             }
         }
@@ -82,7 +87,7 @@ const UserTable = () => {
 
 
     const getData = async () => {
-        const res2 = await (fetch("http://localhost:8000/api/v1/users/all", {
+        const res2 = await (fetch(`http://localhost:8000/api/v1/users?current=${meta.current}&pageSize=${meta.pageSize}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -100,13 +105,46 @@ const UserTable = () => {
             )
         }
         setListUser(data2?.data?.result)
+
         console.log(data2)
+        setMeta({
+            current: data2.data.meta.current,
+            pageSize: data2.data.meta.pageSize,
+            total: data2.data.meta.total,
+            pages: data2.data.meta.pages
+        })
     }
 
     const showModal = () => {
         setIsCreateModalOpen(true);
     };
 
+    const handleOnChange = async (page: number, pageSize: number) => {
+        const res2 = await (fetch(`http://localhost:8000/api/v1/users?current=${page}&pageSize=${pageSize}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${token}`
+            }
+        }))
+
+        const data2 = await res2.json()
+
+        if (!data2.data) {
+            notification.error(
+                {
+                    message: JSON.stringify(data2.message)
+                }
+            )
+        }
+        setListUser(data2?.data?.result)
+        setMeta({
+            current: data2.data.meta.current,
+            pageSize: data2.data.meta.pageSize,
+            total: data2.data.meta.total,
+            pages: data2.data.meta.pages
+        })
+    }
 
     return (
         <div>
@@ -124,7 +162,12 @@ const UserTable = () => {
                     >Add User</Button>
                 </div>
             </div>
-            <Table dataSource={listUser} columns={columns} rowKey={"_id"}/>
+            <Table dataSource={listUser} columns={columns} rowKey={"_id"} pagination={{
+                current: meta.current,
+                total: meta.total,
+                pageSize: meta.pageSize,
+                onChange: handleOnChange,
+            }}/>
             <UserModalCreate
                 getData={getData}
                 token={token}
