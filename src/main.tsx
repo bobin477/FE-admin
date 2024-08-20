@@ -9,6 +9,7 @@ import TrackPage from './screens/TrackPage';
 import Layout from './layout/Layout';
 import App from './App';
 import './app.css';
+
 const router = createBrowserRouter([
   {
     path: "/",
