@@ -22,9 +22,19 @@ export default function TrackTable() {
     })
     const columns: TableProps<DataType>['columns'] = [
         {
+            title: "STT",
+            dataIndex: "test",
+            key: "stt",
+            render: (text, record, index) => {
+                console.log(index)
+                return <>{((meta.current - 1) * meta.pageSize) + index + 1 }</>
+            }
+       }
+       ,
+        {
             title: 'Title',
             dataIndex: 'title',
-            key: 'name',
+            key: 'title',
             render: (text) => <a>{text}</a>,
         },
         {
