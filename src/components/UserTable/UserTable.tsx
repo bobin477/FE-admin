@@ -106,7 +106,6 @@ const UserTable = () => {
         }
         setListUser(data2?.data?.result)
 
-        console.log(data2)
         setMeta({
             current: data2.data.meta.current,
             pageSize: data2.data.meta.pageSize,

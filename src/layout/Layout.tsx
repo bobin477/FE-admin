@@ -19,6 +19,7 @@ const LayOut = () => {
         )
 
         const data = await res.json();
+        
         if(data){
             localStorage.setItem("access_token",data.data.access_token)
         }

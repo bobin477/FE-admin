@@ -1,7 +1,13 @@
+import TrackTable from "../components/TrackTable/TrackTable"
 
 const TrackPage = () => {
+  
+
+ 
   return (
-    <div>TrackPage</div>
+    <div>
+      <TrackTable />
+    </div>
   )
 }
 
